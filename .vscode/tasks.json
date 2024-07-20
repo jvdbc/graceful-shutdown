@@ -1,0 +1,95 @@
+{
+    "version": "2.0.0",
+    "type": "shell",
+    "command": "go",
+    "cwd": "${workspaceFolder}",
+    "tasks": [
+		{
+			"label": "install",
+			"args": [
+				"install",
+				"-v",
+				"./..."
+			],
+			"group": "none",
+			"problemMatcher": [
+				"$go"
+			]
+		},
+		{
+			"label": "run",
+			"args": [
+				"run",
+				"${file}"
+			],
+			"group": "none",
+			"problemMatcher": [
+				"$go"
+			]
+		},
+		{
+			"label": "test",
+			"args": [
+				"test",
+				"-v",
+				"./..."
+			],
+			"group": "test"
+		},
+		{
+			"label": "build-step1",
+			"command": "zsh",
+			"args": [
+				"-c",
+				"install -d ${workspaceRoot}/build/darwin_arm64 && install -d ${workspaceRoot}/build/linux_amd64",
+			],
+			"group": "none",
+			"type": "shell"
+		},
+		{
+			"label": "build-step2",
+			"options": {
+				"env": {
+					"GOOS": "linux",
+					"GOARCH" : "amd64"
+				}
+			},
+			"args": [
+				"build",
+				"-C",
+				"${workspaceRoot}/cmd/graceful-shutdown",
+				"-o",
+				"${workspaceRoot}/build/linux_amd64"
+			],
+			"group": "none",
+			"problemMatcher": [
+				"$go"
+			]
+		},
+		{
+			"label": "build-step3",
+			"args": [
+				"build",
+				"-C",
+				"${workspaceRoot}/cmd/graceful-shutdown",
+				"-o",
+				"${workspaceRoot}/build/darwin_arm64"
+			],
+			"group": "none",
+			"problemMatcher": [
+				"$go"
+			]
+		},
+		{
+			"label": "build",
+			"dependsOn": [
+				"build-step1",
+				"build-step2",
+				"build-step3",
+			],
+			"problemMatcher": [
+				"$go"
+			]
+		},
+	],
+}
